@@ -38,3 +38,7 @@ HTTP GET `http://localhost:8080/api/optimise` will return a set of results if th
 ## Performance
 
 Seems ok with low concurrent connections, but there is a bottle neck somewhere (I believe lp-modeler -> GLPK via writing temporary files) that needs to be addressed.
+
+You can use a software like wrk to test the performance, e.g:
+
+```wrk http://localhost:8080/api/optimise --latency -t 1 -c 10 -d 2s```
