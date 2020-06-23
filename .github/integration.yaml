@@ -1,0 +1,49 @@
+name: Integration
+
+on:
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  codestyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
+          components: rustfmt
+      - uses: actions/checkout@v1
+      - run: cargo fmt --all -- --check
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          components: clippy
+          rust-version: nightly
+      - uses: actions/checkout@v1
+      - run: cargo clippy --all-targets --all-features -- -D clippy::all
+
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
+      - uses: actions/checkout@v1
+      - run: cargo check --all
+
+  test:
+    needs: [codestyle, lint, compile]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
+      - uses: actions/checkout@v1
+      - run: cargo test --verbose
